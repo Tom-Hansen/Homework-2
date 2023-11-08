@@ -17,7 +17,7 @@ struct Flight {
 		: departure(source), destination(destination), distance(dist) {}
 };
 
-//Question 2:
+//Question 2 & 3:
 class Plane
 {
 protected:
@@ -32,17 +32,45 @@ private:
 	vector<Flight> flights;
 
 public:
-	Plane(const string& from, const string& to)
-		: wait_time(0.0), pos(0.0), vel(0.0), distance(0.0), loiter_time(0.0), at_SCE(false), origin(from), destination(to) {
-	
+	Plane(const string& from, const string& to, const double& dist)
+	{
+		string origin = from;
+		string destination = to;
+		double distance = dist;
+		pos = 0;
+		vel = 0;
+		wait_time = 0;
+		loiter_time - 0;
+		at_SCE = 0;
 	}
 
-	virtual ~Plane(){
-	
+	virtual ~Plane() {
+
 	}
 
-	void operate(double dt){
-
+	void operate(double dt) {
+		if (loiter_time != 0)
+		{
+			loiter_time -= dt; //seconds
+		}
+		else if (wait_time != 0)
+		{
+			wait_time -= dt; //seconds
+		}
+		else if (pos < distance)
+		{
+			pos += (vel * dt);
+			at_SCE = 0;
+		}
+		else if (destination == "SCE")
+		{
+			at_SCE = 1;
+		}
+		else
+		{
+			time_on_ground();
+			pos = 0.0;
+		}
 	}
 
 	double getPos() const {
@@ -78,7 +106,8 @@ public:
 	}
 
 	double distance_to_SCE() {
-		return distance;
+		if(destination == "SCE")
+			return (distance - pos);
 	}
 
 	virtual double time_on_ground() {
@@ -86,21 +115,28 @@ public:
 	}
 
 	virtual string plane_type() {
-		return "String";
+		return "GA";
 	}
 
-	static double draw_from_normal_dist(double mean, double std_dev) {
-		// Implementation for the "draw_from_normal_dist" function
-		default_random_engine rand_generator;
-		normal_distribution<double> distribution(mean, std_dev);
-		return distribution(rand_generator);
+	static double draw_from_normal_dist(double m, double sd) {
+		std::random_device rd{};
+		std::mt19937 gen{ rd() };
+		std::normal_distribution<> d{ m, sd };
+		return d(gen);
+	}
+};
+
+
+class Airliner : public Plane
+{
+private:
 
 };
 
-class Q3
+class GeneralAviation : public Plane
 {
 
-}
+};
 
 int main()
 {
