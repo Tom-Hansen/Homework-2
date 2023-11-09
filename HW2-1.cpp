@@ -11,14 +11,20 @@
 
 using namespace std;
 
-struct Flight {
-	string departure;
-	string destination;
-	int distance;
+//struct Flight {
+//	string departure;
+//	string destination;
+//	int dist;
+//
+//	Flight(const string& source, const string& destination, int dist)
+//		: departure(source), destination(destination), distance(dist) {}
+//};
 
-	Flight(const string& source, const string& destination, int dist)
-		: departure(source), destination(destination), distance(dist) {}
-};
+
+// The airports and distances, Question 1
+vector<string> airport_start = { "PHL", "ORD", "EWR"};
+vector<string> airport_end = { "SCE", "SCE", "SCE"};
+vector<int> airport_distance = { 160, 640, 220 };
 
 //Question 2 & 3:
 class Plane
@@ -32,23 +38,27 @@ private:
 	double loiter_time;
 	bool at_SCE;
 	string origin, destination;
-	vector<Flight> flights;
+	vector<string> Plane_Start = airport_start; // Importing the containers
+	vector<string> Plane_End = airport_end;
+	vector<int> Plane_Dist = airport_distance;
 
 public:
 	Plane() : pos(0), vel(0), wait_time(0), loiter_time(0), at_SCE(false)
 	{
 		// Made a default constructor to avoid issues in the Airliner class
 	}
-	Plane(const string& from, const string& to, const double& dist)
+	void PlaneTwo(const string& from, const string& to)
 	{
-		string origin = from;
-		string destination = to;
-		double distance = dist;
+		int i = 0;
+		origin = from;
+		destination = to;
+		distance = Plane_Dist[i];
 		pos = 0;
 		vel = 0;
 		wait_time = 0;
-		loiter_time - 0;
+		loiter_time = 0;
 		at_SCE = 0;
+		
 	}
 
 	virtual ~Plane() {
@@ -104,8 +114,9 @@ public:
 		return at_SCE;
 	}
 
-	void setVel(double vel2) {
+	double setVel(double vel2) {
 		vel = vel2;
+		return(vel);
 	}
 
 	void setLoiterTime(double loiter_time2) {
@@ -131,20 +142,18 @@ public:
 		std::normal_distribution<> d{ m, sd };
 		return d(gen);
 	}
-
-	int Plane2(const string& from, const string& to);
+	friend class ATC;
 };
 
-class Airliner : public Plane
+class Airliner : private Plane
 {
 private:
 	string Airline;
 public:
 	Airliner(const string& airline, const string& from, const string& to)
-		: Airline(airline)
 	{
 		Airline = airline; // kept one variable lowercase to avoid errors
-		Plane2(from, to);
+		PlaneTwo(from, to);
 	}
 	~Airliner()
 	{
@@ -166,7 +175,7 @@ class GeneralAviation : public Plane
 public:
 	GeneralAviation(const string& from, const string& to)
 	{
-		Plane2(from, to);
+		PlaneTwo(from, to);
 	}
 	~GeneralAviation()
 	{
@@ -179,31 +188,95 @@ public:
 	}
 };
 
-int main()
+class ATC : public Plane
 {
-	// Question 1
-	vector<Flight> flights;
+	Plane P;
+private:
+	string registered_planes;
+	int MAX_LANDED_PLANE_NUM = 2;
+	int AIRSPACE_DISTANCE = 50;
+public:
+	ATC()
+	{
 
-	flights.push_back(Flight("SCE", "PHL", 160));
-	flights.push_back(Flight("SCE", "ORD", 640));
-	flights.push_back(Flight("SCE", "EWR", 220));
+	}
 
-	string Aircraft1 = "AA";
-	string Aircraft2 = "UA";
-	string Aircraft3 = "UA";
-	string Aircraft4 = "AA";
-	string Aircraft5 = "General";
-	string Aircraft6 = "General";
-	string Aircraft7 = "General";
+	~ATC()
+	{
+
+	}
+
+	double register_plane;
+
+	int control_traffic()
+	{
+		int landed_planes = 0;
+		int i = 0;
+		for (i = 0; i < 7; i++)
+		{
+			if (i < register_plane)
+			{
+				landed_planes += Plane::getAtSCE();
+				i++;
+				continue;
+			}
+			if (landed_planes >= MAX_LANDED_PLANE_NUM)
+			{
+				i = 0;
+			}
+			if (i >= register_plane)
+			{
+				break;
+			}
+			while (i < register_plane)
+			{
+				if (at_SCE == 0 && distance_to_SCE() <= AIRSPACE_DISTANCE && loiter_time == 0)
+				{
+					loiter_time = 100;
+					i++;
+				}
+				else
+					continue;
+			}
+		}
+	}
+};
+
+int main(int argc, char** argv)
+{
+	Plane P;
 
 	Airliner Aircraft1("AA", "SCE", "PHL");
-	Aircraft1.setVel(600.0);
-	double speed2 = Plane.setVel();
-	double speed3 = Plane.setVel();
-	double speed4 = Plane.setVel();
-	double speed5 = Plane.setVel();
-	double speed6 = Plane.setVel();
-	double speed7 = Plane.setVel();
+	Airliner Aircraft2("UA", "SCE", "ORD");
+	Airliner Aircraft3("UA", "SCE", "EWR");
+	Airliner Aircraft4("AA", "SCE", "ORD");
+	Airliner Aircraft5("General Aviation", "SCE", "PHL");
+	Airliner Aircraft6("General Aviation", "SCE", "EWR");
+	Airliner Aircraft7("General Aviation", "SCE", "ORD");
+
+	double speed1 = P.setVel(470);
+	double speed2 = P.setVel(515);
+	double speed3 = P.setVel(480);
+	double speed4 = P.setVel(500);
+	double speed5 = P.setVel(140);
+	double speed6 = P.setVel(160);
+	double speed7 = P.setVel(180);
+
+	int timestep = 11;
+	while (timestep < 101)
+	{
+		P.operate(timestep);
+		cout << "Timestep: " << timestep << endl;
+		//cout << Aircraft1 << endl;
+		//cout << Aircraft2 << endl;
+		//cout << Aircraft3 << endl;
+		//cout << Aircraft4 << endl;
+		//cout << Aircraft5 << endl;
+		//cout << Aircraft6 << endl;
+		//cout << Aircraft7 << endl;
+		cout << endl;
+		timestep += 1;
+	}
 
 	return 0;
 }
