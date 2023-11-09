@@ -1,5 +1,8 @@
 ﻿// HW2.cpp : Defines the entry point for the application.
 
+// Homework 2
+// Ian Atkinson, Tom Hansen, Kameron Metcalf
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -32,6 +35,10 @@ private:
 	vector<Flight> flights;
 
 public:
+	Plane() : pos(0), vel(0), wait_time(0), loiter_time(0), at_SCE(false)
+	{
+		// Made a default constructor to avoid issues in the Airliner class
+	}
 	Plane(const string& from, const string& to, const double& dist)
 	{
 		string origin = from;
@@ -124,18 +131,52 @@ public:
 		std::normal_distribution<> d{ m, sd };
 		return d(gen);
 	}
-};
 
+	int Plane2(const string& from, const string& to);
+};
 
 class Airliner : public Plane
 {
 private:
+	string Airline;
+public:
+	Airliner(const string& airline, const string& from, const string& to)
+		: Airline(airline)
+	{
+		Airline = airline; // kept one variable lowercase to avoid errors
+		Plane2(from, to);
+	}
+	~Airliner()
+	{
 
+	}
+	string plane_type()
+	{
+		return Airline;
+	};
+	double time_on_ground()
+	{
+		wait_time = draw_from_normal_dist(1800, 600);
+		return(wait_time);
+	}
 };
 
 class GeneralAviation : public Plane
 {
-
+public:
+	GeneralAviation(const string& from, const string& to)
+	{
+		Plane2(from, to);
+	}
+	~GeneralAviation()
+	{
+	
+	}
+	double time_on_ground()
+	{
+		wait_time = draw_from_normal_dist(600, 60);
+		return(wait_time);
+	}
 };
 
 int main()
@@ -147,8 +188,22 @@ int main()
 	flights.push_back(Flight("SCE", "ORD", 640));
 	flights.push_back(Flight("SCE", "EWR", 220));
 
-	string sourceAirport = "SCE";
-	string destinationAirport = "PHL";
+	string Aircraft1 = "AA";
+	string Aircraft2 = "UA";
+	string Aircraft3 = "UA";
+	string Aircraft4 = "AA";
+	string Aircraft5 = "General";
+	string Aircraft6 = "General";
+	string Aircraft7 = "General";
+
+	Airliner Aircraft1("AA", "SCE", "PHL");
+	Aircraft1.setVel(600.0);
+	double speed2 = Plane.setVel();
+	double speed3 = Plane.setVel();
+	double speed4 = Plane.setVel();
+	double speed5 = Plane.setVel();
+	double speed6 = Plane.setVel();
+	double speed7 = Plane.setVel();
 
 	return 0;
 }
