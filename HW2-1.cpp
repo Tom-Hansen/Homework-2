@@ -8,18 +8,9 @@
 #include <vector>
 #include "HW2.h"
 #include <random>
+#include "HW2_Visualizer.h"
 
 using namespace std;
-
-//struct Flight {
-//	string departure;
-//	string destination;
-//	int dist;
-//
-//	Flight(const string& source, const string& destination, int dist)
-//		: departure(source), destination(destination), distance(dist) {}
-//};
-
 
 // The airports and distances, Question 1
 vector<string> airport_start = { "PHL", "ORD", "EWR"};
@@ -244,15 +235,18 @@ public:
 
 int main(int argc, char** argv)
 {
+	HW2_VIZ viz;
 	Plane P;
+
+	viz.visualize_plane();
 
 	Airliner Aircraft1("AA", "SCE", "PHL");
 	Airliner Aircraft2("UA", "SCE", "ORD");
 	Airliner Aircraft3("UA", "SCE", "EWR");
 	Airliner Aircraft4("AA", "SCE", "ORD");
-	Airliner Aircraft5("General Aviation", "SCE", "PHL");
-	Airliner Aircraft6("General Aviation", "SCE", "EWR");
-	Airliner Aircraft7("General Aviation", "SCE", "ORD");
+	GeneralAviation Aircraft5("SCE", "PHL");
+	GeneralAviation Aircraft6("SCE", "EWR");
+	GeneralAviation Aircraft7("SCE", "ORD");
 
 	double speed1 = P.setVel(470);
 	double speed2 = P.setVel(515);
@@ -263,7 +257,7 @@ int main(int argc, char** argv)
 	double speed7 = P.setVel(180);
 
 	int timestep = 11;
-	while (timestep < 101)
+	while (true)
 	{
 		P.operate(timestep);
 		cout << "Timestep: " << timestep << endl;
@@ -276,7 +270,15 @@ int main(int argc, char** argv)
 		//cout << Aircraft7 << endl;
 		cout << endl;
 		timestep += 1;
+		viz.update(timestep);
 	}
 
 	return 0;
 }
+
+// Need help with:
+// How to actually get position
+// What Airline = Airline means
+// If while(true) is correct
+// If I set up airline list correctly
+// How to do the operate part
