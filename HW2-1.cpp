@@ -2,6 +2,7 @@
 
 // Homework 2
 // Ian Atkinson, Tom Hansen, Kameron Metcalf
+// we couldn't get SDL2 to link with CMake which is why the code isnt able to run
 
 #include <iostream>
 #include <string>
@@ -23,15 +24,15 @@ class Plane
 protected:
 	double wait_time;
 private:
-	double pos;
-	double vel;
-	double distance;
-	double loiter_time;
-	bool at_SCE;
-	string origin, destination;
+	double pos; //position
+	double vel; //velocity
+	double distance; //distance
+	double loiter_time; //amount of time airplanes need for possible landings
+	bool at_SCE; //State College Airport
+	string origin, destination; //origin and destination
 	vector<string> Plane_Start = airport_start; // Importing the containers
-	vector<string> Plane_End = airport_end;
-	vector<int> Plane_Dist = airport_distance;
+	vector<string> Plane_End = airport_end; //where the planes end at
+	vector<int> Plane_Dist = airport_distance; //plane distance
 
 public:
 	Plane() : pos(0), vel(0), wait_time(0), loiter_time(0), at_SCE(false)
@@ -40,15 +41,15 @@ public:
 	}
 	void PlaneTwo(const string& from, const string& to)
 	{
-		int i = 0;
-		origin = from;
-		destination = to;
-		distance = Plane_Dist[i];
-		pos = 0;
-		vel = 0;
-		wait_time = 0;
-		loiter_time = 0;
-		at_SCE = 0;
+		int i = 0; //int set to 0
+		origin = from; //origin is set to from
+		destination = to; //destination is set to to
+		distance = Plane_Dist[i]; //plane distance is set to distance
+		pos = 0; //position set to 0
+		vel = 0; //velocity set to 0
+		wait_time = 0; //wait time is 0
+		loiter_time = 0; //loiter time is 0
+		at_SCE = 0; //at state college airport is 0
 		
 	}
 
@@ -57,7 +58,7 @@ public:
 	}
 
 	void operate(double dt) {
-		if (loiter_time != 0)
+		if (loiter_time != 0) //if else statement for planes operations
 		{
 			loiter_time -= dt; //seconds
 		}
@@ -81,53 +82,53 @@ public:
 		}
 	}
 
-	double getPos() const {
+	double getPos() const { //return position
 		return pos;
 	}
 
-	double getVel() const {
+	double getVel() const { //return velocity
 		return vel;
 	}
 
-	double get_loiter_time() const {
+	double get_loiter_time() const { //return loiter time
 		return loiter_time;
 	}
 
-	string getOrigin() const {
+	string getOrigin() const { //return origim
 		return origin;
 	}
 
-	string getDestination() const {
+	string getDestination() const { //return destination
 		return destination;
 	}
 
-	bool getAtSCE() const {
+	bool getAtSCE() const { //return the at State College Airport
 		return at_SCE;
 	}
 
-	double setVel(double vel2) {
+	double setVel(double vel2) { //Velocity 1 is equal to Velocity 2
 		vel = vel2;
 		return(vel);
 	}
 
-	void setLoiterTime(double loiter_time2) {
+	void setLoiterTime(double loiter_time2) { //Loiter time 1 is equal to Loiter time 2
 		loiter_time = loiter_time2;
 	}
 
-	double distance_to_SCE() {
+	double distance_to_SCE() { //Calculation for destination State College
 		if(destination == "SCE")
 			return (distance - pos);
 	}
 
-	virtual double time_on_ground() {
+	virtual double time_on_ground() { //Value for time on ground
 		return 0.0;
 	}
 
-	virtual string plane_type() {
+	virtual string plane_type() { //Plane type is GA
 		return "GA";
 	}
 
-	static double draw_from_normal_dist(double m, double sd) {
+	static double draw_from_normal_dist(double m, double sd) {  
 		std::random_device rd{};
 		std::mt19937 gen{ rd() };
 		std::normal_distribution<> d{ m, sd };
