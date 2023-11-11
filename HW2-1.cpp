@@ -136,111 +136,122 @@ public:
 	}
 	friend class ATC;
 };
-
+// Class representing an Airliner, inheriting privately from the Plane class
 class Airliner : private Plane
 {
 private:
-	string Airline;
+	string Airline; // Private member variable storing the airline name
 public:
+// Constructor for Airliner, taking airline, departure, and destination as parameters
 	Airliner(const string& airline, const string& from, const string& to)
 	{
 		Airline = airline; // kept one variable lowercase to avoid errors
-		PlaneTwo(from, to);
+		PlaneTwo(from, to); // Call the PlaneTwo function from the base class with departure and destination
 	}
 	~Airliner()
 	{
 
 	}
+    // Member function to get the type of the plane (returns the Airline)
 	string plane_type()
 	{
 		return Airline;
 	};
 	double time_on_ground()
 	{
+	  // Set wait_time using a normal distribution function with parameters 1800 and 600
 		wait_time = draw_from_normal_dist(1800, 600);
-		return(wait_time);
+		return(wait_time);// Return the calculated wait_time
 	}
 };
-
+// Class representing General Aviation, inheriting publicly from the Plane class
 class GeneralAviation : public Plane
 {
 public:
+    // Constructor for GeneralAviation, taking departure and destination as parameters
 	GeneralAviation(const string& from, const string& to)
 	{
-		PlaneTwo(from, to);
+		PlaneTwo(from, to); // Call the PlaneTwo function from the base class with departure and destination
 	}
 	~GeneralAviation()
 	{
 	
 	}
+    // Member function to calculate the time the plane spends on the ground
 	double time_on_ground()
 	{
+		        // Set wait_time using a normal distribution function with parameters 600 and 60
 		wait_time = draw_from_normal_dist(600, 60);
-		return(wait_time);
+		return(wait_time);// Return the calculated wait_time
 	}
 };
-
+// Class representing Air Traffic Control (ATC), inheriting publicly from the Plane class
 class ATC : public Plane
 {
-	Plane P;
+	Plane P; // Object of the Plane class as a private member
 private:
 	string registered_planes;
-	int MAX_LANDED_PLANE_NUM = 2;
-	int AIRSPACE_DISTANCE = 50;
+	int MAX_LANDED_PLANE_NUM = 2;// Constant for maximum number of landed planes
+	int AIRSPACE_DISTANCE = 50;// Constant for airspace distance
 public:
+    // Constructor for ATC
 	ATC()
 	{
 
 	}
-
+    // Destructor for ATC
 	~ATC()
 	{
 
 	}
 
-	double register_plane;
-
+	double register_plane;// Member variable storing the registered planes
+    // Function to control air traffic
 	int control_traffic()
 	{
-		int landed_planes = 0;
-		int i = 0;
+		int landed_planes = 0;// Variable to count landed planes
+		int i = 0;// Loop variable
+		// Loop through 7 iterations 
 		for (i = 0; i < 7; i++)
 		{
 			if (i < register_plane)
 			{
+				// Increment landed_planes by the number of planes at SCE 
 				landed_planes += Plane::getAtSCE();
 				i++;
 				continue;
 			}
 			if (landed_planes >= MAX_LANDED_PLANE_NUM)
 			{
-				i = 0;
+				i = 0;// Reset the loop variable if the maximum number of landed planes is reached
 			}
-			if (i >= register_plane)
+			if (i >= register_plane)// Exit the loop if i is greater than or equal to register_plane
 			{
 				break;
 			}
+			// Continue loop while i is less than register_plane
 			while (i < register_plane)
 			{
+				// Check conditions for loiter time and airspace distance
 				if (at_SCE == 0 && distance_to_SCE() <= AIRSPACE_DISTANCE && loiter_time == 0)
 				{
-					loiter_time = 100;
+					loiter_time = 100; // Set loiter_time to 100
 					i++;
 				}
 				else
-					continue;
+					continue; // Continue the loop
 			}
 		}
 	}
 };
-
+//Main Function
 int main(int argc, char** argv)
 {
-	HW2_VIZ viz;
-	Plane P;
+	HW2_VIZ viz;// Create an object of the HW2_VIZ class
+	Plane P;// Create an object of the Plane class
 
 	viz.visualize_plane();
-
+    // Create instances of Airliner and GeneralAviation classes with different parameters
 	Airliner Aircraft1("AA", "SCE", "PHL");
 	Airliner Aircraft2("UA", "SCE", "ORD");
 	Airliner Aircraft3("UA", "SCE", "EWR");
@@ -248,7 +259,7 @@ int main(int argc, char** argv)
 	GeneralAviation Aircraft5("SCE", "PHL");
 	GeneralAviation Aircraft6("SCE", "EWR");
 	GeneralAviation Aircraft7("SCE", "ORD");
-
+    // Set different speeds for the Plane object
 	double speed1 = P.setVel(470);
 	double speed2 = P.setVel(515);
 	double speed3 = P.setVel(480);
@@ -257,11 +268,12 @@ int main(int argc, char** argv)
 	double speed6 = P.setVel(160);
 	double speed7 = P.setVel(180);
 
-	int timestep = 11;
+	int timestep = 11;// Initial timestep value
+	// Infinite loop
 	while (true)
 	{
-		P.operate(timestep);
-		cout << "Timestep: " << timestep << endl;
+		P.operate(timestep); // Call the operate function from the Plane object
+		cout << "Timestep: " << timestep << endl; // Output the current timestep
 		//cout << Aircraft1 << endl;
 		//cout << Aircraft2 << endl;
 		//cout << Aircraft3 << endl;
@@ -271,7 +283,7 @@ int main(int argc, char** argv)
 		//cout << Aircraft7 << endl;
 		cout << endl;
 		timestep += 1;
-		viz.update(timestep);
+		viz.update(timestep);// Call the update function from the viz object
 	}
 
 	return 0;
